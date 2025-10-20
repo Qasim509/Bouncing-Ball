@@ -8,34 +8,78 @@
     body {
       margin: 0;
       height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
       background: linear-gradient(to top, #e8d8c4, #fff);
       overflow: hidden;
     }
 
-    .ball {
+    #gameArea {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+    }
+
+    #ball {
       width: 80px;
       height: 80px;
       background-color: #d4a017;
       border-radius: 50%;
-      position: relative;
-      animation: bounce 2s ease-in-out infinite;
+      position: absolute;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    @keyframes bounce {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-250px);
-      }
     }
   </style>
 </head>
 <body>
-  <div class="ball"></div>
+  <div id="gameArea">
+    <div id="ball"></div>
+  </div>
+
+  <script>
+    const ball = document.getElementById('ball');
+    const gameArea = document.getElementById('gameArea');
+    
+    let x = 0;
+    let y = 0;
+    let dx = 6; // X speed
+    let dy = 6; // Y speed
+    let gravity = 0.3;
+    let bounce = 0.8; // bounce factor (energy loss)
+    
+    function animate() {
+        // Update position
+        x += dx;
+        dy += gravity; // Apply gravity
+        y += dy;
+        
+        // Check for collision with right/left walls
+        if (x + ball.offsetWidth > gameArea.offsetWidth) {
+            x = gameArea.offsetWidth - ball.offsetWidth;
+            dx = -dx * bounce;
+        } else if (x < 0) {
+            x = 0;
+            dx = -dx * bounce;
+        }
+        
+        // Check for collision with floor/ceiling
+        if (y + ball.offsetHeight > gameArea.offsetHeight) {
+            y = gameArea.offsetHeight - ball.offsetHeight;
+            dy = -dy * bounce;
+        } else if (y < 0) {
+            y = 0;
+            dy = -dy * bounce;
+        }
+        
+        // Apply some air resistance
+        dx *= 0.995;
+        
+        // Apply new position
+        ball.style.transform = `translate(${x}px, ${y}px)`;
+        
+        // Continue animation
+        requestAnimationFrame(animate);
+    }
+    
+    // Start the animation
+    animate();
+  </script>
 </body>
 </html>
